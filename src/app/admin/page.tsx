@@ -3,69 +3,75 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import db from "@/db/db"
-import { formatCurrency, formatNumber } from "@/lib/formatters"
+  CardTitle
+} from '@/components/ui/card'
+import { site } from '@/config'
+import db from '@/lib/db'
+import { formatCurrency, formatNumber } from '@/lib/formatters'
+import { type Metadata } from 'next'
 
-async function getSalesData() {
+export const metadata: Metadata = {
+  title: `${site.name} - Dashboard`
+}
+
+async function getOrdersData() {
   const data = await db.order.aggregate({
     _sum: { pricePaidInCents: true },
-    _count: true,
+    _count: true
   })
 
   return {
     amount: (data._sum.pricePaidInCents || 0) / 100,
-    numberOfSales: data._count,
+    numberOfOrders: data._count
   }
 }
 
-async function getUserData() {
-  const [userCount, orderData] = await Promise.all([
-    db.user.count(),
+async function getCustomerData() {
+  const [customerCount, orderData] = await Promise.all([
+    db.customer.count(),
     db.order.aggregate({
-      _sum: { pricePaidInCents: true },
-    }),
+      _sum: { pricePaidInCents: true }
+    })
   ])
 
   return {
-    userCount,
+    customerCount,
     averageValuePerUser:
-      userCount === 0
+      customerCount === 0
         ? 0
-        : (orderData._sum.pricePaidInCents || 0) / userCount / 100,
+        : (orderData._sum.pricePaidInCents || 0) / customerCount / 100
   }
 }
 
 async function getProductData() {
   const [activeCount, inactiveCount] = await Promise.all([
-    db.product.count({ where: { isAvailableForPurchase: true } }),
-    db.product.count({ where: { isAvailableForPurchase: false } }),
+    db.product.count({ where: { isAvailable: true } }),
+    db.product.count({ where: { isAvailable: false } })
   ])
 
   return { activeCount, inactiveCount }
 }
 
 export default async function AdminDashboard() {
-  const [salesData, userData, productData] = await Promise.all([
-    getSalesData(),
-    getUserData(),
-    getProductData(),
+  const [ordersData, customerData, productData] = await Promise.all([
+    getOrdersData(),
+    getCustomerData(),
+    getProductData()
   ])
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       <DashboardCard
-        title="Sales"
-        subtitle={`${formatNumber(salesData.numberOfSales)} Orders`}
-        body={formatCurrency(salesData.amount)}
+        title="Orders"
+        subtitle={`${formatNumber(ordersData.numberOfOrders)} Orders`}
+        body={formatCurrency(ordersData.amount)}
       />
       <DashboardCard
         title="Customers"
         subtitle={`${formatCurrency(
-          userData.averageValuePerUser
+          customerData.averageValuePerUser
         )} Average Value`}
-        body={formatNumber(userData.userCount)}
+        body={formatNumber(customerData.customerCount)}
       />
       <DashboardCard
         title="Active Products"

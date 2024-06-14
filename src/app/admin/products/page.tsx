@@ -1,33 +1,40 @@
-import { Button } from "@/components/ui/button"
-import { PageHeader } from "../_components/PageHeader"
-import Link from "next/link"
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import db from "@/db/db"
-import { CheckCircle2, MoreVertical, XCircle } from "lucide-react"
-import { formatCurrency, formatNumber } from "@/lib/formatters"
+  TableRow
+} from '@/components/ui/table'
+import db from '@/lib/db'
+import { formatCurrency, formatNumber } from '@/lib/formatters'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  ArrowDownToLine,
+  CheckCircle2,
+  EditIcon,
+  MoreVertical,
+  PencilIcon,
+  XCircle
+} from 'lucide-react'
+import Link from 'next/link'
+import { PageHeader } from '../../../components/page-header'
 import {
   ActiveToggleDropdownItem,
-  DeleteDropdownItem,
-} from "./_components/ProductActions"
+  DeleteDropdownItem
+} from '../../../components/dropdown/products'
 
 export default function AdminProductsPage() {
   return (
     <>
-      <div className="flex justify-between items-center gap-4">
+      <div className="flex items-center justify-between gap-4">
         <PageHeader>Products</PageHeader>
         <Button asChild>
           <Link href="/admin/products/new">Add Product</Link>
@@ -44,10 +51,10 @@ async function ProductsTable() {
       id: true,
       name: true,
       priceInCents: true,
-      isAvailableForPurchase: true,
-      _count: { select: { orders: true } },
+      isAvailable: true,
+      _count: { select: { orders: true } }
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' }
   })
 
   if (products.length === 0) return <p>No products found</p>
@@ -68,10 +75,10 @@ async function ProductsTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {products.map(product => (
+        {products.map((product) => (
           <TableRow key={product.id}>
             <TableCell>
-              {product.isAvailableForPurchase ? (
+              {product.isAvailable ? (
                 <>
                   <span className="sr-only">Available</span>
                   <CheckCircle2 />
@@ -93,21 +100,25 @@ async function ProductsTable() {
                   <span className="sr-only">Actions</span>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem>
+                    <ArrowDownToLine className="mr-2 size-4" />
                     <a download href={`/admin/products/${product.id}/download`}>
                       Download
                     </a>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href={`/admin/products/${product.id}/edit`}>
+                  <DropdownMenuItem>
+                    <PencilIcon className="mr-3 size-4" />
+                    <Link
+                      href={`/admin/products/${product.id}/edit`}
+                      className="block w-full"
+                    >
                       Edit
                     </Link>
                   </DropdownMenuItem>
                   <ActiveToggleDropdownItem
                     id={product.id}
-                    isAvailableForPurchase={product.isAvailableForPurchase}
+                    isAvailable={product.isAvailable}
                   />
-                  <DropdownMenuSeparator />
                   <DeleteDropdownItem
                     id={product.id}
                     disabled={product._count.orders > 0}

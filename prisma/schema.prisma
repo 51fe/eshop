@@ -10,44 +10,79 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Product {
-  id                     String                 @id @default(uuid())
-  name                   String
-  priceInCents           Int
-  filePath               String
-  imagePath              String
-  description            String
-  isAvailableForPurchase Boolean                @default(true)
-  createdAt              DateTime               @default(now())
-  updatedAt              DateTime               @updatedAt
-  orders                 Order[]
-  downloadVerifications  DownloadVerification[]
+model User {
+  id                       String    @id @default(cuid())
+  name                     String?
+  email                    String    @unique
+  password                 String
+  resetPasswordToken       String?   @unique @map("reset_password_token")
+  resetPasswordTokenExpiry DateTime? @map("reset_password_token_expiery")
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+  sessions                 Session[]
+  
+  @@map("users")
 }
 
-model User {
-  id        String   @id @default(uuid())
+model Session {
+  id           String   @id @default(cuid())
+  userId       String?  @map("user_id")
+  sessionToken String   @unique @map("session_token")
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+
+model Product {
+  id                    String                 @id @default(cuid())
+  name                  String
+  priceInCents          Int
+  file                  String
+  image                 String
+  description           String
+  isAvailable           Boolean                @default(false) @map("isAvailable")
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  orders                Order[]
+  downloadVerifications DownloadVerification[]
+
+  @@map("products")
+}
+
+model Customer {
+  id        String   @id @default(cuid())
   email     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orders    Order[]
+
+  @@map("customers")
 }
 
 model Order {
-  id               String   @id @default(uuid())
+  id               String   @id @default(cuid())
   pricePaidInCents Int
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  userId    String
-  productId String
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  customerId String
+  productId  String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@map("orders")
 }
 
 model DownloadVerification {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   expiresAt DateTime
   createdAt DateTime @default(now())
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("downloadverifications")
 }

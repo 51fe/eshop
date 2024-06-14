@@ -1,9 +1,15 @@
-import db from "@/db/db"
-import { PageHeader } from "../../../_components/PageHeader"
-import { ProductForm } from "../../_components/ProductForm"
+import { site } from '@/config'
+import db from '@/lib/db'
+import { type Metadata } from 'next/types'
+import { PageHeader } from '@/components/page-header'
+import { ProductForm } from '@/components/form/product'
+
+export const metadata: Metadata = {
+  title: `${site.name} - Edit Product`
+}
 
 export default async function EditProductPage({
-  params: { id },
+  params: { id }
 }: {
   params: { id: string }
 }) {

@@ -1,7 +1,7 @@
-import { unstable_cache as nextCache } from "next/cache"
-import { cache as reactCache } from "react"
+import { unstable_cache as nextCache } from 'next/cache'
+import { cache as reactCache } from 'react'
 
-type Callback = (...args: any[]) => Promise<any>
+type Callback = (...args: unknown[]) => Promise<unknown>
 export function cache<T extends Callback>(
   cb: T,
   keyParts: string[],
