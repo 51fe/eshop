@@ -9,16 +9,6 @@ import {
 } from '@react-email/components'
 import { OrderInformation } from './order-information'
 
-type PurchaseReceiptEmailProps = {
-  product: {
-    name: string
-    image: string
-    description: string
-  }
-  order: { id: string; createdAt: Date; pricePaidInCents: number }
-  downloadVerificationId: string
-}
-
 PurchaseReceiptEmail.PreviewProps = {
   product: {
     name: 'Product name',
@@ -31,13 +21,13 @@ PurchaseReceiptEmail.PreviewProps = {
     pricePaidInCents: 10000
   },
   downloadVerificationId: crypto.randomUUID()
-} satisfies PurchaseReceiptEmailProps
+} satisfies OrderInfo
 
 export function PurchaseReceiptEmail({
   product,
   order,
   downloadVerificationId
-}: PurchaseReceiptEmailProps) {
+}: OrderInfo) {
   const previewText = `Download {product.name} and view receipt`
   return (
     <Html>

@@ -25,7 +25,10 @@ export function ProductForm({ product }: { product?: Product | null }) {
   )
 
   return (
-    <form action={action} className="space-y-8">
+    <form
+      action={action}
+      className="space-y-8"
+    >
       <div className="space-y-2">
         <Label htmlFor="name">Name</Label>
         <Input
@@ -56,12 +59,18 @@ export function ProductForm({ product }: { product?: Product | null }) {
           id="description"
           name="description"
           defaultValue={product?.description}
+          rows={4}
         />
         {state && <div className="text-destructive">{state.description}</div>}
       </div>
       <div className="space-y-2">
         <Label htmlFor="file">File</Label>
-        <Input type="file" id="file" name="file" accept={upLoadFile.formats} />
+        <Input
+          type="file"
+          id="file"
+          name="file"
+          accept={upLoadFile.formats}
+        />
         {product != null && (
           <div className="text-muted-foreground">{product.file}</div>
         )}
@@ -69,20 +78,28 @@ export function ProductForm({ product }: { product?: Product | null }) {
       </div>
       <div className="space-y-2">
         <Label htmlFor="image">Image</Label>
-        <Input type="file" id="image" name="image" accept={upLoadImg.formats} />
+        <Input
+          type="file"
+          id="image"
+          name="image"
+          accept={upLoadImg.formats}
+        />
         {product != null && (
           <Image
             src={`/${product.image}`}
-            width={240}
-            height={240}
+            width={200}
+            height={200}
             alt="Product Image"
           />
         )}
         {state && <div className="text-destructive">{state.image}</div>}
       </div>
       <div className="space-y-2">
-        <SubmitButton description="Save the product" className="w-full">
-          {product != null ? 'Add' : 'Update'} product
+        <SubmitButton
+          description="Save the product"
+          className="w-full"
+        >
+          {!product?.id ? 'Add' : 'Update'} product
         </SubmitButton>
       </div>
     </form>

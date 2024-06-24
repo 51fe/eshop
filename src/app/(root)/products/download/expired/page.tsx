@@ -1,13 +1,21 @@
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { TriangleAlert } from 'lucide-react'
 import Link from 'next/link'
 
 export default function Expired() {
   return (
-    <>
-      <h1 className="mb-4 text-4xl">Download link expired</h1>
-      <Button asChild size="lg">
-        <Link href="/orders">Get New Link</Link>
-      </Button>
-    </>
+    <Alert variant="destructive">
+      <TriangleAlert className="h-4 w-4" />
+      <AlertTitle>Download link expired</AlertTitle>
+      <AlertDescription>
+        <Button
+          asChild
+          size="lg"
+        >
+          <Link href="/orders">Get New Link</Link>
+        </Button>
+      </AlertDescription>
+    </Alert>
   )
 }

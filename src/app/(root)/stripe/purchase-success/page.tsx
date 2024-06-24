@@ -1,12 +1,10 @@
-import { Button } from '@/components/ui/button'
-import db from '@/lib/db'
-import { formatCurrency } from '@/lib/formatters'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
+import { Button } from '@/components/ui/button'
+import db from '@/lib/db'
+import { stripe } from '@/lib/stripe'
+import { formatCurrency } from '@/lib/formatters'
 
 export default async function SuccessPage({
   searchParams
@@ -25,6 +23,8 @@ export default async function SuccessPage({
 
   const isSuccess = paymentIntent.status === 'succeeded'
 
+  const vId = await createDownloadVerification(product.id)
+
   return (
     <div className="mx-auto w-full max-w-5xl space-y-8">
       <h1 className="text-4xl font-bold">
@@ -34,8 +34,8 @@ export default async function SuccessPage({
         <div className="relative aspect-video w-1/3 shrink-0">
           <Image
             src={`/${product.image}`}
-            width={240}
-            height={240}
+            width={200}
+            height={200}
             alt={product.name}
           />
         </div>
@@ -47,15 +47,13 @@ export default async function SuccessPage({
           <div className="line-clamp-3 text-muted-foreground">
             {product.description}
           </div>
-          <Button className="mt-4" size="lg" asChild>
+          <Button
+            className="mt-4"
+            size="lg"
+            asChild
+          >
             {isSuccess ? (
-              <a
-                href={`/products/download/${await createDownloadVerification(
-                  product.id
-                )}`}
-              >
-                Download
-              </a>
+              <a href={`/products/download/${vId}`}>Download</a>
             ) : (
               <Link href={`/products/${product.id}/purchase`}>Try Again</Link>
             )}

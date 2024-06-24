@@ -36,7 +36,7 @@ export function ResetPasswordEmail({
             <Section>
               <Text className="text-xl">Hi,</Text>
               <Text className="text-base">
-                Someone just requested a password change for your {site.name}
+                Someone just requested a password change for your {site.name}{' '}
                 account associated with {email}.
               </Text>
               <Text className="text-base">

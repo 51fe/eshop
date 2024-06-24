@@ -1,40 +1,37 @@
-import { ProductCard, ProductCardSkeleton } from '@/components/product-card'
-import { cache } from '@/lib/cache'
-import db from '@/lib/db'
 import { Suspense } from 'react'
+import { ProductCardSkeleton } from '@/components/list/product-card'
+import { ProductList } from '@/components/list/product'
+import { Noresult } from '@/components/no-result'
+import { fetchProducts } from '@/lib/actions/fetch-products'
+import LoadMore from '@/components/scroll/load-more'
 
-const getProducts = cache(() => {
-  return db.product.findMany({
-    where: { isAvailable: true },
-    orderBy: { createdAt: 'desc' }
-  })
-}, ['/products', 'getProducts'])
+export default async function ProductsPage() {
+  const { products, hasNextPage, nextCursor } = await fetchProducts(6)
+  if (products.length === 0) return <Noresult itemName="products" />
 
-export default function ProductsPage() {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <Suspense
-        fallback={
-          <>
-            <ProductCardSkeleton />
-            <ProductCardSkeleton />
-            <ProductCardSkeleton />
-            <ProductCardSkeleton />
-            <ProductCardSkeleton />
-            <ProductCardSkeleton />
-          </>
-        }
-      >
-        <ProductsSuspense />
-      </Suspense>
-    </div>
+    <>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Suspense
+          fallback={
+            <>
+              <ProductCardSkeleton />
+              <ProductCardSkeleton />
+              <ProductCardSkeleton />
+              <ProductCardSkeleton />
+              <ProductCardSkeleton />
+              <ProductCardSkeleton />
+            </>
+          }
+        >
+          <ProductsSuspense products={products} />
+        </Suspense>
+      </div>
+      {hasNextPage && <LoadMore nextCursor={nextCursor} />}
+    </>
   )
 }
 
-async function ProductsSuspense() {
-  const products = await getProducts()
-
-  return products.map((product) => (
-    <ProductCard key={product.id} {...product} />
-  ))
+async function ProductsSuspense({ products }: { products: ProductInfo[] }) {
+  return <ProductList products={products} />
 }

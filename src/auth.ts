@@ -1,11 +1,11 @@
 import NextAuth from 'next-auth'
-import bcryptjs from 'bcryptjs'
+import { compare } from 'bcrypt-ts'
 import authConfig from './config/auth'
 import Credentials from 'next-auth/providers/credentials'
 import { getUserByEmail } from './lib/actions/user'
 import { signInSchema } from './lib/validations/auth'
 
-export const { auth, handlers, signIn, signOut } = NextAuth({
+export const { auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
@@ -16,10 +16,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             email
           })
           if (user?.password) {
-            const passwordIsValid = await bcryptjs.compare(
-              password,
-              user.password
-            )
+            const passwordIsValid = await compare(password, user.password)
             if (passwordIsValid) return user
           }
         }

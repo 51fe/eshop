@@ -44,7 +44,8 @@ export function LoginForm() {
           case 'not-registered':
             toast({
               title: 'Not registered',
-              description: 'Please make sure you have signed up'
+              description: 'Please make sure you have signed up',
+              variant: 'destructive'
             })
             break
           case 'invalid-credentials':
@@ -93,7 +94,11 @@ export function LoginForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="text" placeholder="admin@example.com" {...field} />
+                <Input
+                  type="text"
+                  placeholder="admin@example.com"
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="pt-2 sm:text-sm" />
             </FormItem>
@@ -107,7 +112,10 @@ export function LoginForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <PasswordInput placeholder="********" {...field} />
+                <PasswordInput
+                  placeholder="********"
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="pt-2 sm:text-sm" />
             </FormItem>

@@ -16,7 +16,10 @@ export function SignOutButton() {
         variant="ghost"
         className="w-full justify-start text-sm"
       >
-        <LogOutIcon className="mr-2 size-4" aria-hidden="true" />
+        <LogOutIcon
+          className="mr-2 size-4"
+          aria-hidden="true"
+        />
         Sign out
       </Button>
     </form>

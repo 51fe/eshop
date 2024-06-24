@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
+import path from 'node:path'
+import { NextResponse, NextRequest } from 'next/server'
 import db from '@/lib/db'
-import { NextResponse, type NextRequest } from 'next/server'
 
 export async function GET(
   req: NextRequest,
@@ -17,9 +18,11 @@ export async function GET(
     return NextResponse.redirect(new URL('/products/download/expired', req.url))
   }
 
-  const { size } = await fs.stat(data.product.file)
-  const file = await fs.readFile(data.product.file)
-  const extension = data.product.file.split('.').pop()
+  const { product } = data
+  const filePath = path.join('uploads', product.file)
+  const { size } = await fs.stat(filePath)
+  const file = await fs.readFile(filePath)
+  const extension = product.file.split('.').pop()
 
   return new NextResponse(file, {
     headers: {

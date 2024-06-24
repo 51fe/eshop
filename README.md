@@ -1,4 +1,43 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a [Next.js](https://nextjs.org/) SASS template project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+## Flow 
+
+1. Buy a product(such as ebook)
+2. Get a emai verification3
+3. Download the attachment
+4. Input email dowload the attachments agian from the orde history
+
+## Features
+
+- ✅ Beauterful UI with shadcn
+- ✅ Respansive layout with Tailwind
+- ✅ Custom fonts and theme
+- ✅ light and dark mode
+- ✅ Authentication with NextAuth
+- ✅ Email and password authentication
+- ✅ Email verification
+- ✅ Admin management with a dashboard 
+- ✅ Email templates with React Email
+- ✅ Form validation on client and server sides with Zod
+- ✅ Search and infinity and limit pagination
+- ✅ Strip payment
+- ✅ Directly upload the cover and attachment
+- ✅ Database and ORM with Prisma
+- ✅ Rigorous linting and TypeScript type checking
+- ✅ Docker deployment
+- ✅ Edge compatible 
+
+## Usage
+
+The app is based on one single user, update your name and email before seeding:
+
+```javascript
+data: {
+  name: 'admin',
+  email: 'riafan@hotmail.com',
+  password
+},
+```
 
 ## Getting Started
 

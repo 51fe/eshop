@@ -15,7 +15,7 @@ import Link from 'next/link'
 export async function UserMenu() {
   const session = await auth()
   return (
-    <nav className="space-x-1">
+    <nav className="mx-4 space-x-1">
       {session?.user ? (
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -25,11 +25,15 @@ export async function UserMenu() {
               'transition-all duration-300 ease-in-out hover:opacity-70'
             )}
           >
-            <div className="self-center">
+            <div className="cursor-pointer self-center">
               <UserRoundIcon className="size-6 rounded-full" />
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuContent
+            className="w-56"
+            align="end"
+            forceMount
+          >
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">

@@ -23,14 +23,14 @@ export default async function LoginPage() {
 
   return (
     <div className="flex h-auto min-h-screen w-full items-center justify-center">
-      <Card className="max-sm:flex max-sm:w-full max-sm:flex-col max-sm:items-center max-sm:justify-center max-sm:rounded-none max-sm:border-none sm:min-w-[370px] sm:max-w-[368px]">
-        <CardHeader className="space-y-1">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl">Sign in</CardTitle>
-            <Link href="/">
-              <XIcon className="size-4" />
-            </Link>
+      <Card className="max-sm:rounded-none max-sm:border-none sm:min-w-[370px] sm:max-w-[368px]">
+        <CardHeader className="flex flex-row justify-between">
+          <div className="flex-1">
+            <CardTitle className="text-center text-2xl">Sign in</CardTitle>
           </div>
+          <Link href="/">
+            <XIcon className="size-4" />
+          </Link>
         </CardHeader>
         <CardContent className="max-sm:w-full max-sm:max-w-[340px] max-sm:px-10">
           <LoginForm />

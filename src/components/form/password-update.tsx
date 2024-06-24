@@ -55,7 +55,8 @@ export function PasswordUpdateForm({
           case 'success':
             toast({
               title: 'Success!',
-              description: 'You can now sign in with new password'
+              description: 'You can now sign in with new password',
+              variant: 'success'
             })
             router.push('/login')
             break
@@ -90,14 +91,20 @@ export function PasswordUpdateForm({
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <PasswordInput placeholder="**********" {...field} />
+                <PasswordInput
+                  placeholder="**********"
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="pt-2 sm:text-sm" />
             </FormItem>
           )}
         />
 
-        <SubmitButton isPending={isPending} description="Update password">
+        <SubmitButton
+          isPending={isPending}
+          description="Update password"
+        >
           Update password
         </SubmitButton>
       </form>

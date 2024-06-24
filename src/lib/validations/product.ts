@@ -1,38 +1,6 @@
 import { upLoadFile, upLoadImg } from '@/config'
 import { z } from 'zod'
-import { defineFileSchema } from '../utils'
-
-const file = z
-  .instanceof(File)
-  .refine((file) => file.size > 0, {
-    message: 'Please select a file'
-  })
-  .refine((file) => file.size < upLoadFile.size * 1024 * 1024, {
-    message: `Max file size is ${upLoadFile.size} MB`
-  })
-  .refine(
-    (file) =>
-      file.size === 0 || upLoadFile.formats.includes(file.name.slice(-3)),
-    {
-      message: `Only support ${upLoadFile.formats}`
-    }
-  )
-
-const image = z
-  .instanceof(File)
-  .refine((file) => file.size > 0, {
-    message: 'Please select a image'
-  })
-  .refine((file) => file.size < upLoadImg.size * 1024 * 1024, {
-    message: `Max image size is ${upLoadImg.size} MB`
-  })
-  .refine(
-    (file) =>
-      file.size === 0 || upLoadImg.formats.includes(file.name.slice(-3)),
-    {
-      message: `Only support ${upLoadImg.formats}`
-    }
-  )
+import { defineFileSchema } from '@/lib/utils'
 
 export const addProductSchema = z.object({
   name: z.string().min(1, 'Name is required'),

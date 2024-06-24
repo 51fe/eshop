@@ -46,9 +46,10 @@ export function PasswordResetForm() {
           case 'success':
             toast({
               title: 'Success!',
-              description: 'Check your email for a password reset link'
+              description: 'Check your email for a password reset link',
+              variant: 'success'
             })
-            router.push('/login')
+            router.push('/')
             break
           default:
             toast({
@@ -82,7 +83,10 @@ export function PasswordResetForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="admin@example.com" {...field} />
+                <Input
+                  placeholder="admin@example.com"
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="pt-2 sm:text-sm" />
             </FormItem>

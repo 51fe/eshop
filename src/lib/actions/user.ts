@@ -7,11 +7,8 @@ import {
   type EmailInput,
   type TokenInput
 } from '@/lib/validations/auth'
-import { type User } from '@prisma/client'
 
-export async function getUserByEmail(
-  rawInput: EmailInput
-): Promise<User | null> {
+export async function getUserByEmail(rawInput: EmailInput) {
   try {
     const { email } = await emailSchema.parseAsync(rawInput)
     if (!email) return null
@@ -27,9 +24,7 @@ export async function getUserByEmail(
   }
 }
 
-export async function getUserByResetPasswordToken(
-  rawInput: TokenInput
-): Promise<User | null> {
+export async function getUserByResetPasswordToken(rawInput: TokenInput) {
   try {
     const { token } = await tokenSchema.parseAsync(rawInput)
     if (!token) return null

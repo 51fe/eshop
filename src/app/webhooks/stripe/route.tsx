@@ -1,10 +1,9 @@
+import { NextResponse, NextRequest } from 'next/server'
+import Stripe from 'stripe'
 import { PurchaseReceiptEmail } from '@/components/email/purchase-receipt'
 import db from '@/lib/db'
 import { sendEmail } from '@/lib/email'
-import { NextResponse, type NextRequest } from 'next/server'
-import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
+import { stripe } from '@/lib/stripe'
 
 export async function POST(req: NextRequest) {
   const event = stripe.webhooks.constructEvent(

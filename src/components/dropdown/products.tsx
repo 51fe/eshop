@@ -7,7 +7,7 @@ import { useTransition } from 'react'
 import {
   deleteProduct,
   toggleProductAvailability
-} from '../../lib/actions/admin/products'
+} from '@/lib/actions/admin/products'
 
 export function ActiveToggleDropdownItem({
   id,

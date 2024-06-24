@@ -15,7 +15,7 @@ export async function GET(
 
   if (product == null) return notFound()
 
-  const filePath = path.join('./uploads', product.file)
+  const filePath = path.join('uploads', product.file)
   const { size } = await fs.stat(filePath)
   const file = await fs.readFile(filePath)
   const extension = product.file.split('.').pop()

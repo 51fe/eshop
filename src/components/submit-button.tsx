@@ -21,7 +21,7 @@ export function SubmitButton({
   return (
     <Button
       type="submit"
-      className="w-full mx-auto"
+      className="mx-auto w-full"
       disabled={pending || isPending}
       {...props}
     >

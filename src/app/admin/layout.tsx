@@ -1,5 +1,5 @@
-import { NavLink } from '@/components/nav/nav-link'
 import { Navbar } from '@/components/nav/navigation'
+import { adminNavItems } from '@/config'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,12 +10,7 @@ export default function AdminLayout({
 }>) {
   return (
     <>
-      <Navbar>
-        <NavLink href="/admin">Dashboard</NavLink>
-        <NavLink href="/admin/products">Products</NavLink>
-        <NavLink href="/admin/customers">Customers</NavLink>
-        <NavLink href="/admin/orders">Orders</NavLink>
-      </Navbar>
+      <Navbar items={adminNavItems} />
       <div className="container my-6">{children}</div>
     </>
   )
