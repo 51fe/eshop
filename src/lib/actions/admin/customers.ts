@@ -6,7 +6,7 @@ import db from '@/lib/db'
 
 const pageSize = 8
 
-export async function getCustomers({ query, page }: SearchParams) {
+export async function getCustomers({ query, page = 1 }: SearchParams) {
   const skip = (page - 1) * pageSize
   const take = pageSize
 

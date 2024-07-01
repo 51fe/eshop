@@ -97,7 +97,7 @@ function CheckoutForm({
 
       if (orderExists) {
         toast({
-          title: 'Error',
+          title: 'Warning',
           description: `You have already purchased this product. 
           Try downloading it from the Orders page`
         })

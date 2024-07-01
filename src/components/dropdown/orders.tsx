@@ -4,7 +4,7 @@ import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { TrashIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
-import { deleteOrder } from '../../lib/actions/admin/orders'
+import { deleteOrder } from '@/lib/actions/admin/orders'
 
 export function DeleteDropDownItem({ id }: { id: string }) {
   const [isPending, startTransition] = useTransition()

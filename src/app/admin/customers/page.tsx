@@ -1,8 +1,5 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
+import { Suspense } from 'react'
+import { type Metadata } from 'next'
 import {
   Table,
   TableBody,
@@ -13,16 +10,13 @@ import {
 } from '@/components/ui/table'
 import { site } from '@/config'
 import { formatCurrency, formatNumber } from '@/lib/formatters'
-import { MoreVertical } from 'lucide-react'
-import { type Metadata } from 'next'
 import { PageHeader } from '@/components/page-header'
-import { DeleteDropDownItem } from '@/components/dropdown/customers'
 import { Noresult } from '@/components/no-result'
-import { getCustomers } from '@/lib/actions/admin/customers'
+import { deleteCustomer, getCustomers } from '@/lib/actions/admin/customers'
 import Search from '@/components/table/search'
 import Pagination from '@/components/table/pagination'
-import { Suspense } from 'react'
 import AdminLoading from '@/components/loading'
+import { DeleteButton } from '@/components/delete-button'
 
 export const metadata: Metadata = {
   title: `${site.name} - Customers`
@@ -37,7 +31,7 @@ export default async function CustomersPage({ searchParams }: SearchProps) {
   return (
     <>
       <PageHeader>Orders</PageHeader>
-      {totalPages > 0 && (
+      {customers.length > 0 && (
         <div className="mb-4">
           <Search placeholder="Search customers..." />
         </div>
@@ -81,15 +75,10 @@ export default async function CustomersPage({ searchParams }: SearchProps) {
                   )}
                 </TableCell>
                 <TableCell className="text-center">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <MoreVertical />
-                      <span className="sr-only">Actions</span>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DeleteDropDownItem id={customer.id} />
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <DeleteButton
+                    id={customer.id}
+                    onGetAction={deleteCustomer}
+                  />
                 </TableCell>
               </TableRow>
             ))}

@@ -7,7 +7,7 @@ export function Logo() {
     <Link
       href="/"
       title="Back to home"
-      className="self-center md:hidden lg:flex"
+      className="items-center md:hidden lg:flex"
     >
       <LibraryIcon className="size-8" />
       <span className="sr-only">Home</span>

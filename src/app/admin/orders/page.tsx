@@ -1,8 +1,5 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
+import { Suspense } from 'react'
+import { Metadata } from 'next'
 import {
   Table,
   TableBody,
@@ -12,17 +9,14 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { formatCurrency } from '@/lib/formatters'
-import { MoreVertical } from 'lucide-react'
-import { Metadata } from 'next'
 import { PageHeader } from '@/components/page-header'
-import { DeleteDropDownItem } from '@/components/dropdown/orders'
 import { Noresult } from '@/components/no-result'
 import { site } from '@/config'
 import Search from '@/components/table/search'
 import Pagination from '@/components/table/pagination'
-import { getOrders } from '@/lib/actions/admin/orders'
-import { Suspense } from 'react'
+import { deleteOrder, getOrders } from '@/lib/actions/admin/orders'
 import AdminLoading from '@/components/loading'
+import { DeleteButton } from '@/components/delete-button'
 
 export const metadata: Metadata = {
   title: `${site.name} - Orders`
@@ -37,7 +31,7 @@ export default async function OrdersPage({ searchParams }: SearchProps) {
   return (
     <>
       <PageHeader>Orders</PageHeader>
-      {totalPages > 0 && (
+      {orders.length > 0 && (
         <div className="mb-4">
           <Search placeholder="Search orders..." />
         </div>
@@ -61,7 +55,7 @@ export default async function OrdersPage({ searchParams }: SearchProps) {
             <TableRow>
               <TableHead>Product</TableHead>
               <TableHead>Customer</TableHead>
-              <TableHead>Price Paid</TableHead>
+              <TableHead>Paid</TableHead>
               <TableHead className="w-0">
                 <span className="sr-only">Actions</span>
               </TableHead>
@@ -76,15 +70,10 @@ export default async function OrdersPage({ searchParams }: SearchProps) {
                   {formatCurrency(order.pricePaidInCents / 100)}
                 </TableCell>
                 <TableCell className="text-center">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <MoreVertical />
-                      <span className="sr-only">Actions</span>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DeleteDropDownItem id={order.id} />
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <DeleteButton
+                    id={order.id}
+                    onGetAction={deleteOrder}
+                  />
                 </TableCell>
               </TableRow>
             ))}

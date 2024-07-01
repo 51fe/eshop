@@ -5,8 +5,17 @@ import { Noresult } from '@/components/no-result'
 import { fetchProducts } from '@/lib/actions/fetch-products'
 import LoadMore from '@/components/scroll/load-more'
 
-export default async function ProductsPage() {
-  const { products, hasNextPage, nextCursor } = await fetchProducts(6)
+interface ParamProps {
+  query?: string
+}
+
+export default async function ProductsPage({
+  searchParams
+}: {
+  searchParams: ParamProps
+}) {
+  const query = searchParams.query || ''
+  const { products, hasNextPage, nextCursor } = await fetchProducts(query)
   if (products.length === 0) return <Noresult itemName="products" />
 
   return (
@@ -27,7 +36,12 @@ export default async function ProductsPage() {
           <ProductsSuspense products={products} />
         </Suspense>
       </div>
-      {hasNextPage && <LoadMore nextCursor={nextCursor} />}
+      {hasNextPage && (
+        <LoadMore
+          nextCursor={nextCursor}
+          query={query}
+        />
+      )}
     </>
   )
 }

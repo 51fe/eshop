@@ -3,16 +3,20 @@
 import { OrderHistoryEmail } from '@/components/email/order-history'
 import db from '@/lib/db'
 import { sendEmail } from '@/lib/email'
-import { emailSchema } from '@/lib/validations/auth'
+import { EmailInput, emailSchema } from '@/lib/validations'
+
+interface ResultProps {
+  type: 'error' | 'success' | 'warning'
+  message: string
+}
 
 export async function emailOrderHistory(
-  prevState: unknown,
-  formData: FormData
-) {
-  const result = emailSchema.safeParse({ email: formData.get('email') })
+  formData: EmailInput
+): Promise<'invalid-input' | 'not-found' | 'error' | 'success'> {
+  const result = emailSchema.safeParse(formData)
 
-  if (result.success === false) {
-    return { error: 'Invalid email address' }
+  if (!result.success) {
+    return 'invalid-input'
   }
 
   const customer = await db.customer.findUnique({
@@ -37,11 +41,8 @@ export async function emailOrderHistory(
     }
   })
 
-  if (customer == null) {
-    return {
-      message:
-        'Check your email to view your order history and download your products.'
-    }
+  if (customer == null || customer.orders.length === 0) {
+    return 'not-found'
   }
 
   const orders = customer.orders.map(async (order) => {
@@ -60,18 +61,16 @@ export async function emailOrderHistory(
 
   const allOrders = await Promise.all(orders)
 
-  const succeed = await sendEmail(
-    customer.email,
-    'Order History',
-    OrderHistoryEmail({ orders: allOrders })
-  )
-
-  if (!succeed) {
-    return { error: 'There was an error sending your email. Please try again.' }
-  }
-
-  return {
-    message:
-      'Check your email to view your order history and download your products.'
+  try {
+    const succeed = await sendEmail(
+      customer.email,
+      'Order History',
+      OrderHistoryEmail({ orders: allOrders })
+    )
+    if (succeed) return 'success'
+    return 'error'
+  } catch (error) {
+    console.log(error)
+    throw error
   }
 }

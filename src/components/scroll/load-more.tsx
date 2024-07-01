@@ -6,11 +6,12 @@ import { fetchProducts } from '@/lib/actions/fetch-products'
 import { ProductCard } from '@/components/list/product-card'
 import { Loader2 } from 'lucide-react'
 
-export default function LoadMore({
-  nextCursor
-}: {
-  nextCursor: string | undefined
-}) {
+interface LoadMoreProps {
+  nextCursor?: string
+  query?: string
+}
+
+export default function LoadMore({ nextCursor, query }: LoadMoreProps) {
   const {
     data,
     isError,
@@ -19,7 +20,7 @@ export default function LoadMore({
     fetchNextPage,
     isFetchingNextPage
   } = useInfiniteQuery({
-    queryFn: ({ pageParam = nextCursor }) => fetchProducts(6, pageParam),
+    queryFn: ({ pageParam = nextCursor }) => fetchProducts(query, 6, pageParam),
     queryKey: ['products'],
     initialPageParam: nextCursor,
     // getNextPageParam is used to get the cursor of the last element in the current page
@@ -42,7 +43,7 @@ export default function LoadMore({
 
   return (
     <>
-      <section className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <section className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {data?.pages.map((page) =>
           page.products.map((product: ProductInfo, index: number) => {
             if (page.products.length === index + 1) {
@@ -70,7 +71,7 @@ export default function LoadMore({
       </section>
       <div className="mb-2 flex w-full items-center justify-center">
         {isFetchingNextPage && inView && (
-          <Loader2 className="size-12 animate-spin" />
+          <Loader2 className="size-8 animate-spin" />
         )}
       </div>
     </>

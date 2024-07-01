@@ -3,7 +3,7 @@
 import React from 'react'
 import { useFormStatus } from 'react-dom'
 import { Loader2Icon } from 'lucide-react'
-import { Button, type ButtonProps } from './ui/button'
+import { Button, type ButtonProps } from '@/components/ui/button'
 
 interface SubmitButtonProps extends ButtonProps {
   isPending?: boolean

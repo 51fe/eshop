@@ -47,7 +47,8 @@ export function OrderInformation({
       </Section>
       <Section className="my-4 rounded-lg border border-solid border-gray-500 p-4 md:p-6">
         <Img
-          width="100%"
+          width="200px"
+          className="mx-auto object-contain"
           alt={product.name}
           src={absoluteUrl(product.image)}
         />

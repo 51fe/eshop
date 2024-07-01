@@ -47,7 +47,6 @@ export default async function LoginPage() {
               Reset now
               <span className="sr-only">Reset Password</span>
             </Link>
-            .
           </div>
         </CardFooter>
       </Card>

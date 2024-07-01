@@ -1,12 +1,8 @@
 'use server'
 
 import db from '@/lib/db'
-import {
-  emailSchema,
-  tokenSchema,
-  type EmailInput,
-  type TokenInput
-} from '@/lib/validations/auth'
+import { emailSchema, type EmailInput } from '@/lib/validations'
+import { tokenSchema, type TokenInput } from '@/lib/validations/auth'
 
 export async function getUserByEmail(rawInput: EmailInput) {
   try {

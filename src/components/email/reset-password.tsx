@@ -1,5 +1,3 @@
-import { site } from '@/config'
-import { absoluteUrl } from '@/lib/utils'
 import {
   Body,
   Button,
@@ -11,17 +9,15 @@ import {
   Tailwind,
   Text
 } from '@react-email/components'
-import { type ReactElement } from 'react'
+import { site } from '@/config'
+import { absoluteUrl } from '@/lib/utils'
 
 interface ResetPasswordEmailProps {
   email: string
   token: string
 }
 
-export function ResetPasswordEmail({
-  email,
-  token
-}: ResetPasswordEmailProps): ReactElement {
+export function ResetPasswordEmail({ email, token }: ResetPasswordEmailProps) {
   const previewText = `${site.name} password reset.`
 
   return (

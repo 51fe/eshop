@@ -20,8 +20,7 @@ export async function sendEmail(
   })
 
   try {
-    const testResult = await transporter.verify()
-    console.log(testResult)
+    await transporter.verify()
   } catch (error) {
     console.error({ error })
     return false

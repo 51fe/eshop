@@ -1,18 +1,30 @@
 'use server'
 
-import { PrismaClient, Prisma, Product } from '@prisma/client'
+import { PrismaClient, Prisma } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
 export async function fetchProducts(
+  query: string = '',
   pageSize: number = 6,
   cursor: string | undefined = undefined
 ) {
+  const or: Prisma.ProductWhereInput = query
+    ? {
+        OR: [
+          { name: { contains: query } },
+          { description: { contains: query } }
+        ]
+      }
+    : {}
+
   // Define the type for query options using Prisma's types
   const products = await prisma.product.findMany({
     take: pageSize + 1, // Fetch one extra item to check if there's a next page
+
     where: {
-      isAvailable: true
+      isAvailable: true,
+      ...or
     },
     select: {
       id: true,

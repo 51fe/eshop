@@ -1,107 +1,179 @@
 'use client'
 
-import { useState } from 'react'
+import { useTransition } from 'react'
 import Image from 'next/image'
 import { upLoadFile, upLoadImg } from '@/config'
 import { type Product } from '@prisma/client'
-import { useFormState } from 'react-dom'
-
-import { formatCurrency } from '@/lib/formatters'
 
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { SubmitButton } from '@/components/submit-button'
 
 import { addProduct, updateProduct } from '@/lib/actions/admin/products'
+import {
+  ProductInput,
+  addProductSchema,
+  editProductSchema
+} from '@/lib/validations/product'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '../ui/form'
+import { useToast } from '../ui/use-toast'
 
 export function ProductForm({ product }: { product?: Product | null }) {
-  const [state, action] = useFormState(
-    product == null ? addProduct : updateProduct.bind(null, product.id),
-    {}
-  )
-  const [priceInCents, setPriceInCents] = useState<number | undefined>(
-    product?.priceInCents
-  )
+  let form = useForm<ProductInput>({
+    resolver: zodResolver(
+      product == null ? addProductSchema : editProductSchema
+    ),
+    defaultValues: {
+      name: product?.name,
+      priceInCents: product?.priceInCents ?? 0,
+      description: product?.description
+    }
+  })
+
+  const { toast } = useToast()
+  const [isPending, startTransition] = useTransition()
+
+  function onSubmit(formData: ProductInput) {
+    startTransition(async () => {
+      const { error } =
+        product == null
+          ? await addProduct(formData)
+          : await updateProduct(product.id, formData)
+
+      if (!!error) {
+        toast({
+          title: 'Error',
+          description: error,
+          variant: 'destructive'
+        })
+      }
+    })
+  }
 
   return (
-    <form
-      action={action}
-      className="space-y-8"
-    >
-      <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
-        <Input
-          type="text"
-          id="name"
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mx-auto space-y-6 md:w-full lg:w-2/3"
+      >
+        <FormField
+          control={form.control}
           name="name"
-          defaultValue={product?.name || ''}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        {state && <div className="text-destructive">{state.name}</div>}
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="priceInCents">Price In Cents</Label>
-        <Input
-          type="number"
-          id="priceInCents"
+        <FormField
+          control={form.control}
           name="priceInCents"
-          defaultValue={priceInCents}
-          onChange={(e) => setPriceInCents(Number(e.target.value) || undefined)}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Price In Cents</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        <div className="text-muted-foreground">
-          {formatCurrency((priceInCents || 0) / 100)}
-        </div>
-        {state && <div className="text-destructive">{state.priceInCents}</div>}
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
+
+        <FormField
+          control={form.control}
           name="description"
-          defaultValue={product?.description}
-          rows={4}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        {state && <div className="text-destructive">{state.description}</div>}
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="file">File</Label>
-        <Input
-          type="file"
-          id="file"
+
+        <FormField
+          control={form.control}
           name="file"
-          accept={upLoadFile.formats}
+          render={({ field: { value, onChange, ...fieldProps } }) => (
+            <FormItem>
+              <FormLabel>File</FormLabel>
+              <FormControl>
+                <Input
+                  {...fieldProps}
+                  type="file"
+                  accept={upLoadFile.formats}
+                  onChange={(event) =>
+                    onChange(event.target.files && event.target.files[0])
+                  }
+                />
+              </FormControl>
+              {product != null && (
+                <FormDescription className="text-muted-foreground">
+                  {product.file}
+                </FormDescription>
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        {product != null && (
-          <div className="text-muted-foreground">{product.file}</div>
-        )}
-        {state && <div className="text-destructive">{state.file}</div>}
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="image">Image</Label>
-        <Input
-          type="file"
-          id="image"
+
+        <FormField
+          control={form.control}
           name="image"
-          accept={upLoadImg.formats}
+          render={({ field: { value, onChange, ...fieldProps } }) => (
+            <FormItem>
+              <FormLabel>Image</FormLabel>
+              <FormControl>
+                <Input
+                  {...fieldProps}
+                  type="file"
+                  accept={upLoadImg.formats}
+                  onChange={(event) =>
+                    onChange(event.target.files && event.target.files[0])
+                  }
+                />
+              </FormControl>
+              {product != null && (
+                <FormDescription>
+                  <Image
+                    src={`/${product.image}`}
+                    width={200}
+                    height={200}
+                    alt="Product Image"
+                  />
+                </FormDescription>
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
         />
-        {product != null && (
-          <Image
-            src={`/${product.image}`}
-            width={200}
-            height={200}
-            alt="Product Image"
-          />
-        )}
-        {state && <div className="text-destructive">{state.image}</div>}
-      </div>
-      <div className="space-y-2">
         <SubmitButton
+          isPending={isPending}
           description="Save the product"
           className="w-full"
         >
           {!product?.id ? 'Add' : 'Update'} product
         </SubmitButton>
-      </div>
-    </form>
+      </form>
+    </Form>
   )
 }

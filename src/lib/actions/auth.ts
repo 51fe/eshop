@@ -5,63 +5,65 @@ import { ResetPasswordEmail } from '@/components/email/reset-password'
 import db from '@/lib/db'
 import { sendEmail } from '@/lib/email'
 import { generateSecureToken, saltAndHashPassword } from '@/lib/utils'
+import { emailSchema, type EmailInput } from '@/lib/validations'
 import {
-  emailSchema,
   signInSchema,
   updatePwdSchema,
-  type EmailInput,
   type SignInInput,
   type UpdatePwdInput
 } from '@/lib/validations/auth'
 import { AuthError } from 'next-auth'
 import { getUserByEmail, getUserByResetPasswordToken } from './user'
 
-export async function login(rawInput: SignInInput) {
+export async function login(
+  rawInput: SignInInput
+): Promise<
+  'invalid-input' | 'not-registered' | 'invalid-credentials' | 'success'
+> {
+  const result = signInSchema.safeParse(rawInput)
+  if (!result.success) {
+    return 'invalid-input'
+  }
+
+  const { email, password } = result.data
+
+  const existingUser = await getUserByEmail({ email })
+  if (!existingUser) return 'not-registered'
+
   try {
-    const result = signInSchema.safeParse(rawInput)
-    if (!result.success) {
-      return 'missing-fields'
-    }
-
-    const { email, password } = result.data
-
-    const existingUser = await getUserByEmail({ email })
-    if (!existingUser) return 'not-registered'
-
     await signIn('credentials', {
       email,
       password,
       redirect: false
     })
-
     return 'success'
   } catch (error) {
+    console.error(error)
     if (error instanceof AuthError) {
       if (error.type === 'CredentialsSignin') {
         return 'invalid-credentials'
       }
-      return error.message
     }
-    return 'Error signin in with password'
+    throw error
   }
 }
 
 export async function resetPassword(
   rawInput: EmailInput
-): Promise<'invalid-input' | 'not-found' | 'error' | 'success'> {
+): Promise<
+  'invalid-input' | 'not-found' | 'update-failed' | 'send-failed' | 'success'
+> {
+  const { email } = await emailSchema.parseAsync(rawInput)
+  if (!email) return 'invalid-input'
+
+  const user = await getUserByEmail({ email })
+  if (!user) return 'not-found'
+
+  const today = new Date()
+  const resetPasswordTokenExpiry = new Date(today.setDate(today.getDate() + 1)) // 24 hours from now
+  const token = generateSecureToken()
   try {
-    const { email } = await emailSchema.parseAsync(rawInput)
-    if (!email) return 'invalid-input'
-
-    const user = await getUserByEmail({ email })
-    if (!user) return 'not-found'
-
-    const today = new Date()
-    const resetPasswordTokenExpiry = new Date(
-      today.setDate(today.getDate() + 1)
-    ) // 24 hours from now
-    const token = generateSecureToken()
-    const userUpdated = await db.user.update({
+    await db.user.update({
       where: {
         id: user.id
       },
@@ -71,22 +73,26 @@ export async function resetPassword(
       }
     })
 
-    const emailSent = await sendEmail(
-      email,
-      'Reset your password',
-      ResetPasswordEmail({ email, token })
-    )
-
-    return userUpdated && emailSent ? 'success' : 'error'
+    try {
+      const emailSent = await sendEmail(
+        email,
+        'Reset your password',
+        ResetPasswordEmail({ email, token })
+      )
+      return 'success'
+    } catch (error) {
+      console.error(error)
+      return 'send-failed'
+    }
   } catch (error) {
     console.error(error)
-    return 'error'
+    return 'update-failed'
   }
 }
 
 export async function updatePassword(
   rawInput: UpdatePwdInput
-): Promise<'invalid-input' | 'not-found' | 'expired' | 'error' | 'success'> {
+): Promise<'invalid-input' | 'not-found' | 'expired' | 'success'> {
   try {
     const validatedInput = updatePwdSchema.safeParse(rawInput)
     const { password, resetPasswordToken } = validatedInput.data!
@@ -102,7 +108,7 @@ export async function updatePassword(
 
     const passwordHash = await saltAndHashPassword(password)
 
-    const userUpdated = await db.user.update({
+    await db.user.update({
       where: {
         id: user.id
       },
@@ -113,9 +119,9 @@ export async function updatePassword(
       }
     })
 
-    return userUpdated ? 'success' : 'error'
+    return 'success'
   } catch (error) {
     console.error(error)
-    throw new Error('Error updating password')
+    throw error
   }
 }

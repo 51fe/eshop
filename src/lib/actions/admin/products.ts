@@ -4,15 +4,18 @@ import { access, constants, mkdir, unlink, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { notFound, redirect } from 'next/navigation'
 import { Prisma } from '@prisma/client'
-import { addProductSchema, editProductSchema } from '@/lib/validations/product'
+import {
+  ProductInput,
+  addProductSchema,
+  editProductSchema
+} from '@/lib/validations/product'
 import db from '@/lib/db'
-import { unstable_noStore } from 'next/cache'
 
 const fileFolder = './uploads'
 const imgFolder = './public'
 const pageSize = 8
 
-export async function getProducts({ query, page }: SearchParams) {
+export async function getProducts({ query, page = 1 }: SearchParams) {
   const skip = (page - 1) * pageSize
   const take = pageSize
 
@@ -50,38 +53,39 @@ export async function getProducts({ query, page }: SearchParams) {
   }
 }
 
-export async function addProduct(prevState: unknown, formData: FormData) {
-  const result = addProductSchema.safeParse(Object.fromEntries(formData))
+export async function addProduct(formData: ProductInput) {
+  const result = addProductSchema.safeParse(formData)
   if (result.success === false) {
-    return result.error.formErrors.fieldErrors
+    return { error: 'Check product failed' }
   }
 
   const { name, description, priceInCents } = result.data
-
   const file = await uploadFile(result.data.file, fileFolder)
   const image = await uploadFile(result.data.image, imgFolder)
-
-  await db.product.create({
-    data: {
-      name,
-      description,
-      priceInCents,
-      file,
-      image
+  if (typeof file === 'string' && typeof image === 'string') {
+    try {
+      await db.product.create({
+        data: {
+          name,
+          description,
+          priceInCents,
+          file,
+          image
+        }
+      })
+      redirect('/admin/products')
+    } catch (error) {
+      return { error: 'Add product failed' }
     }
-  })
-
-  redirect('/admin/products')
+  } else {
+    return { error: 'Add file failed' }
+  }
 }
 
-export async function updateProduct(
-  id: string,
-  prevState: unknown,
-  formData: FormData
-) {
-  const result = editProductSchema.safeParse(Object.fromEntries(formData))
+export async function updateProduct(id: string, formData: ProductInput) {
+  const result = editProductSchema.safeParse(formData)
   if (result.success === false) {
-    return result.error.formErrors.fieldErrors
+    return { error: 'Check product failed' }
   }
 
   const data = result.data
@@ -94,31 +98,42 @@ export async function updateProduct(
   if (data.file && data.file.size > 0) {
     try {
       await unlink(path.join(fileFolder, file))
-      file = await uploadFile(data.file, fileFolder, false)
+      const result = await uploadFile(data.file, fileFolder, false)
+      if (typeof result === 'string') {
+        file = result
+      }
     } catch (error) {
-      throw new Error('No such file')
+      return { error: 'No such a file' }
     }
   }
 
   if (data.image && data.image.size > 0) {
     try {
       await unlink(path.join(imgFolder, image))
-      image = await uploadFile(data.image, imgFolder, false)
+      const result = await uploadFile(data.image, imgFolder, false)
+      if (typeof result === 'string') {
+        image = result
+      }
     } catch (error) {
-      throw new Error('No such image')
+      return { error: 'No such an image' }
     }
   }
 
-  await db.product.update({
-    where: { id },
-    data: {
-      name: data.name,
-      description: data.description,
-      priceInCents: data.priceInCents,
-      file,
-      image
-    }
-  })
+  try {
+    await db.product.update({
+      where: { id },
+      data: {
+        name: data.name,
+        description: data.description,
+        priceInCents: data.priceInCents,
+        file,
+        image
+      }
+    })
+  } catch (error) {
+    console.log(error)
+    return { error: 'Update product failed' }
+  }
   redirect('/admin/products')
 }
 
@@ -130,11 +145,13 @@ export async function toggleProductAvailability(
 }
 
 export async function deleteProduct(id: string) {
-  const product = await db.product.delete({ where: { id } })
-  if (product == null) return notFound()
+  try {
+    const product = await db.product.delete({ where: { id } })
+    if (product == null) return notFound()
 
-  await unlink(path.join(fileFolder, product.file))
-  await unlink(path.join(imgFolder, product.image))
+    await unlink(path.join(fileFolder, product.file))
+    await unlink(path.join(imgFolder, product.image))
+  } catch (error) {}
 }
 
 async function uploadFile(file: File, folder: string, adding = true) {
@@ -142,7 +159,11 @@ async function uploadFile(file: File, folder: string, adding = true) {
     try {
       await access(folder, constants.F_OK)
     } catch (eror) {
-      await mkdir(folder, { recursive: true })
+      try {
+        await mkdir(folder, { recursive: true })
+      } catch (err) {
+        return { error: 'Create upload folder failed' }
+      }
     }
   }
   const fileBuffer = await file.arrayBuffer()

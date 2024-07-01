@@ -20,13 +20,16 @@ export function generateSecureToken() {
   return crypto.randomBytes(32).toString('base64url')
 }
 
-export function defineFileSchema(
-  { size, formats }: { size: number; formats: string },
-  adding: boolean = true
-) {
+export function defineFileSchema({
+  size,
+  formats
+}: {
+  size: number
+  formats: string
+}) {
   return z
-    .instanceof(File)
-    .refine((file) => !adding || file.size > 0, {
+    .instanceof(File, { message: 'Please select a file' })
+    .refine((file) => file.size > 0, {
       message: 'Please select a file'
     })
     .refine((file) => file.size < size * 1024 * 1024, {

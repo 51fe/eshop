@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { emailSchema, type EmailInput } from '@/lib/validations/auth'
+import { emailSchema, type EmailInput } from '@/lib/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useTransition } from 'react'
@@ -38,11 +38,28 @@ export function PasswordResetForm() {
         switch (message) {
           case 'not-found':
             toast({
-              title: 'User with this email address does not exist',
+              title: 'Not found',
+              description: 'User with this email address does not exist',
               variant: 'destructive'
             })
             form.reset()
             break
+          case 'update-failed': {
+            toast({
+              title: 'Failed',
+              description: 'Reset the password failed',
+              variant: 'destructive'
+            })
+            break
+          }
+          case 'send-failed': {
+            toast({
+              title: 'Failed',
+              description: 'Send the notification email failed',
+              variant: 'destructive'
+            })
+            break
+          }
           case 'success':
             toast({
               title: 'Success!',
@@ -50,7 +67,6 @@ export function PasswordResetForm() {
               variant: 'success'
             })
             router.push('/')
-            break
           default:
             toast({
               title: 'Error resetting password',

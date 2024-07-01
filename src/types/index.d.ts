@@ -14,12 +14,12 @@ declare global {
   }
 
   interface SearchParams {
-    query: string
-    page: number
+    query?: string
+    page?: number
   }
 
   interface SearchProps {
-    searchParams: Partial<SearchParams>
+    searchParams: SearchParams
   }
 
   type ProductInfo = Pick<

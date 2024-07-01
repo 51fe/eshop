@@ -39,25 +39,28 @@ export function ProductCard({ product, index }: ProductCardProps) {
       viewport={{ amount: 0 }}
       className="relative w-full max-w-sm rounded"
     >
-      <Card className="flex flex-col overflow-hidden">
-        <div className="mx-auto">
-          <Image
-            priority
-            src={`/${image}`}
-            width={200}
-            height={200}
-            alt={name}
-          />
-        </div>
-        <CardHeader>
-          <CardTitle>{name}</CardTitle>
-          <CardDescription>
-            {formatCurrency(priceInCents / 100)}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="whitespace-pre-wrap">
-          <p className="line-clamp-2">{description}</p>
-        </CardContent>
+
+      <Card className="flex flex-col overflow-hidden hover:border-foreground transition-colors duration-500">
+        <Link href={`/products/${id}`}>
+          <div className="flex justify-center">
+            <Image
+              priority
+              src={`/${image}`}
+              width={200}
+              height={200}
+              alt={name}
+            />
+          </div>
+          <CardHeader>
+            <CardTitle>{name}</CardTitle>
+            <CardDescription className="space-y-4">
+              {formatCurrency(priceInCents / 100)}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="whitespace-pre-wrap">
+            <p className="line-clamp-2">{description}</p>
+          </CardContent>
+        </Link>
         <CardFooter>
           <Button
             asChild

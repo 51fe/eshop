@@ -1,6 +1,5 @@
 'use client'
 
-import { SearchIcon } from 'lucide-react'
 import { useSearchParams, usePathname, useRouter } from 'next/navigation'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
