@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function absoluteUrl(path: string) {
-  return `${process.env.NEXTAUTH_URL}/${path}`
+  return `${process.env.AUTH_URL}/${path}`
 }
 
 export async function saltAndHashPassword(password: string) {

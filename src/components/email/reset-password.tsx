@@ -39,7 +39,7 @@ export function ResetPasswordEmail({ email, token }: ResetPasswordEmailProps) {
                 If this was you, you can set a new password here:
               </Text>
               <Button
-                href={absoluteUrl(`/login/password-update?token=${token}`)}
+                href={absoluteUrl(`login/password-update?token=${token}`)}
               >
                 Set new password
               </Button>

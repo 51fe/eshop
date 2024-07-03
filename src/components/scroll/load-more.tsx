@@ -61,7 +61,7 @@ export default function LoadMore({ nextCursor, query }: LoadMoreProps) {
             }
             return (
               <ProductCard
-                key={`product${product.id}`}
+                key={product.id}
                 product={product}
                 index={index}
               />

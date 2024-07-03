@@ -99,7 +99,8 @@ function CheckoutForm({
         toast({
           title: 'Warning',
           description: `You have already purchased this product. 
-          Try downloading it from the Orders page`
+          Try downloading it from the Orders page`,
+          variant: 'warning'
         })
         setIsLoading(false)
         return

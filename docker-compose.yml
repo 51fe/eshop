@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - 80:8080
+      - 8080:3000
     volumes: 
       - ./:/workspace
     command: sleep infinity

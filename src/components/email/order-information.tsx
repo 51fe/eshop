@@ -47,10 +47,10 @@ export function OrderInformation({
       </Section>
       <Section className="my-4 rounded-lg border border-solid border-gray-500 p-4 md:p-6">
         <Img
+          src={absoluteUrl(product.image)}
           width="200px"
           className="mx-auto object-contain"
           alt={product.name}
-          src={absoluteUrl(product.image)}
         />
         <Row className="mt-8">
           <Column className="align-bottom">
@@ -58,7 +58,7 @@ export function OrderInformation({
           </Column>
           <Column align="right">
             <Button
-              href={absoluteUrl(`/products/download/${downloadVerificationId}`)}
+              href={absoluteUrl(`products/download/${downloadVerificationId}`)}
               className="rounded bg-black px-6 py-4 text-lg text-white"
             >
               Download
